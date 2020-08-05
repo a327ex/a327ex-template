@@ -6,7 +6,7 @@ if not path:find("init") then
   require(path .. ".graphics.graphics")
   require(path .. ".game.Object")
   require(path .. ".system")
-  system.load_files(path, ".lua")
+  system.load_files(path, ".lua", {"love"})
 end
 
 function a327ex_run(config)
