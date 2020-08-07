@@ -184,6 +184,12 @@ function GameObject:apply_torque(t)
 end
 
 
+function GameObject:set_mass(mass)
+  self.body:setMass(mass)
+  return self
+end
+
+
 function GameObject:set_collision_sensors(v)
   self.create_collision_sensors = v
   return self
@@ -348,6 +354,21 @@ end
 
 function GameObject:angle_to_point(x, y)
   return math.atan2(y - self.y, x - self.x)
+end
+
+
+function GameObject:angle_from_point(x, y)
+  return math.atan2(self.y - y, self.x - x)
+end
+
+
+function GameObject:angle_to_object(object)
+  return self:angle_to_point(object.x, object.y)
+end
+
+
+function GameObject:angle_from_object(object)
+  return self:angle_from_point(object.x, object.y)
 end
 
 

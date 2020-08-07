@@ -34,7 +34,7 @@ end
 
 function Shake:get_amplitude(t)
   if not t then
-    if not self.shaking then return end
+    if not self.shaking then return 0 end
     t = self.t
   end
   local s = (t/1000)*self.frequency

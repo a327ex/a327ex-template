@@ -222,19 +222,21 @@ end
 -- t = {1, 2, 3, 4}
 -- table.select(t, function(v) return v >= 3 end) -> {3, 4}
 function table.select(t, f, ...)
+  local out = {}
   for i = #t, 1, -1 do
-    if not f(t[i], i, ...) then table.remove(t, i) end
+    if f(t[i], i, ...) then table.insert(out, t[i]) end
   end
-  return t
+  return out
 end
 
 
 -- Same as filter but reverse
 function table.reject(t, f, ...)
+  local out = {}
   for i = #t, 1, -1 do
-    if f(t[i], i, ...) then table.remove(t, i) end
+    if not f(t[i], i, ...) then table.insert(out, t[i]) end
   end
-  return t
+  return out
 end
 
 

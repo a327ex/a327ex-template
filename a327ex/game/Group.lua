@@ -6,7 +6,6 @@ function Group:new(camera)
   self.camera = camera
   self.objects = {}
   self.objects.by_id = {}
-  self.objects.by_class = {}
   self.cells = {}
   self.cell_size = 128
   return self
@@ -29,12 +28,6 @@ function Group:update(dt)
     if self.objects[i].dead then
       if self.objects[i].destroy then self.objects[i]:destroy() end
       self.objects.by_id[self.objects[i].id] = nil
-      for j, object in ipairs(self.objects.by_class[self.objects[i].class]) do
-        if object.id == self.objects[i].id then
-          table.remove(self.objects.by_class[self.objects[i].class], j)
-          break
-        end
-      end
       table.remove(self.objects, i)
     end
   end
@@ -77,7 +70,6 @@ function Group:destroy()
   for _, object in ipairs(self.objects) do object:destroy() end
   self.objects = {}
   self.objects.by_id = {}
-  self.objects.by_class = {}
   if self.world then
     self.world:destroy()
     self.world = nil
@@ -90,8 +82,6 @@ function Group:add_object(object)
   object.group = self
   if not object.id then object.id = random:uid() end
   self.objects.by_id[object.id] = object
-  if not self.objects.by_class[object.class] then self.objects.by_class[object.class] = {} end
-  table.insert(self.objects.by_class[object.class], object)
   table.insert(self.objects, object)
   return object
 end
@@ -103,8 +93,6 @@ function Group:create_object(class, x, y, opts)
   local object = _G[class](x, y, opts)
   if not object.id then object.id = random:uid() end
   self.objects.by_id[object.id] = object
-  if not self.objects.by_class[object.class] then self.objects.by_class[object.class] = {} end
-  table.insert(self.objects.by_class[object.class], object)
   table.insert(self.objects, object)
   return object
 end
@@ -112,11 +100,6 @@ end
 
 function Group:get_object_by_id(id)
   return self.objects.by_id[id]
-end
-
-
-function Group:get_objects_by_class(class)
-  return self.objects.by_class[class] or {}
 end
 
 
@@ -140,6 +123,21 @@ function Group:get_objects_in_rectangle(x, y, w, h)
     end
   end
   return out
+end
+
+
+function Group:get_closest_object(object, exclude_function)
+  local min_distance, min_index = 100000, 0
+  for i, o in ipairs(self.objects) do
+    if not exclude_function(o) then
+      local d = math.distance(o.x, o.y, object.x, object.y)
+      if d < min_distance then
+        min_distance = d
+        min_index = i
+      end
+    end
+  end
+  return self.objects[min_index]
 end
 
 

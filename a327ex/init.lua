@@ -80,9 +80,9 @@ function a327ex_run(config)
     while accumulator >= fixed_dt do
       frame = frame + 1
       input.update()
-      timer:update(fixed_dt)
-      camera:update(fixed_dt)
-      config.update(fixed_dt)
+      timer:update(fixed_dt*slow_amount)
+      camera:update(fixed_dt*slow_amount)
+      config.update(fixed_dt*slow_amount)
       system.update()
       input.last_key_pressed = nil
       accumulator = accumulator - fixed_dt

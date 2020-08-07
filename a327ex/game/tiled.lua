@@ -1,12 +1,12 @@
 tiled = {}
 
 
-function tiled.get_polygons(path)
+function tiled.get_polygons(map_name, layer_name)
   local polygons = {}
-  local map = require(path)
+  local map = require("assets/maps/" .. map_name)
 
   for _, layer in ipairs(map.layers) do
-    if layer.type == 'objectgroup' then
+    if layer.type == 'objectgroup' and layer.name == layer_name then
       for _, object in ipairs(layer.objects) do
         if object.shape == 'polygon' then
           local polygon = {}
@@ -21,4 +21,22 @@ function tiled.get_polygons(path)
   end
 
   return polygons
+end
+
+
+function tiled.get_points(map_name, layer_name)
+  local points = {}
+  local map = require("assets/maps/" .. map_name)
+
+  for _, layer in ipairs(map.layers) do
+    if layer.type == 'objectgroup' and layer.name == layer_name then
+      for _, object in ipairs(layer.objects) do
+        if object.shape == 'point' then
+          table.insert(points, {x = object.x, y = object.y})
+        end
+      end
+    end
+  end
+
+  return points
 end
