@@ -48,3 +48,8 @@ function string:split(s)
   end
   return out
 end
+
+
+function string:index(i)
+  return self:sub(i, i)
+end

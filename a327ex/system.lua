@@ -92,9 +92,10 @@ function system.does_file_exist(path)
 end
 
 
-function system.load_images()
-  for _, image_name in ipairs(system.enumerate_files("assets/images", ".png")) do
-    local image = love.graphics.newImage("assets/images/" .. image_name .. ".png", {mipmaps = true})
+function system.load_images(path)
+  if path and path:index(-1) ~= '/' then path = path .. '/' end
+  for _, image_name in ipairs(system.enumerate_files(path or "assets/images", ".png")) do
+    local image = love.graphics.newImage((path or "assets/images/") .. image_name .. ".png", {mipmaps = true})
     graphics.images[image_name] = {image = image, w = image:getWidth(), h = image:getHeight()}
   end
 end

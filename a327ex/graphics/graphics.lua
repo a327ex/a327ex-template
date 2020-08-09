@@ -39,6 +39,16 @@ function graphics.draw_animation(name, frame, x, y, r, sx, sy, ox, oy)
 end
 
 
+function graphics.new_animation_from_spritesheet(name, w, h, frames, sheet_name)
+  local source = love.graphics.newImage("assets/images/" .. sheet_name .. ".png")
+  local sw, sh = source:getWidth(), source:getHeight()
+  graphics.animations[name] = {source = source, w = sw, h = sh, frames = #frames}
+  for i, frame in ipairs(frames) do
+    graphics.animations[name][i] = {quad = love.graphics.newQuad((frame[1]-1)*w, (frame[2]-1)*h, w, h, sw, sh), w = w, h = h}
+  end
+end
+
+
 function graphics.new_tileset(name, tile_w, tile_h)
   local source = love.graphics.newImage("assets/images/" .. name .. ".png")
   local sw, sh = source:getWidth(), source:getHeight()
@@ -79,6 +89,11 @@ end
 
 function graphics.get_image_height(name)
   return graphics.images[name].h
+end
+
+
+function graphics.get_image_size(name)
+  return graphics.images[name].w, graphics.images[name].h
 end
 
 
