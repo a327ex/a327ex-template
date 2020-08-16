@@ -438,7 +438,7 @@ end
 
 function GameObject:set_as_polygon(vertices, body_type)
   self.vertices = vertices
-  self.w, self.h = get_polygon_size(self.vertices)
+  self.w, self.h = math.get_polygon_size(self.vertices)
   self.shape = "polygon"
   self.body = love.physics.newBody(self.group.world, 0, 0, body_type or "dynamic")
   self.body:setPosition(self.x, self.y)

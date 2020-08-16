@@ -8,11 +8,6 @@ graphics.text_tags = {}
 graphics.debug_queries = {}
 
 
-function graphics.set_text_tag(tag, actions)
-  graphics.text_tags[tag] = actions
-end
-
-
 function graphics.new_animation(name, w, h, frames)
   local source = love.graphics.newImage("assets/images/" .. name .. ".png")
   local sw, sh = source:getWidth(), source:getHeight()
@@ -139,8 +134,8 @@ function graphics.draw_debug_queries()
 end
 
 
-function graphics.new_text(font, font_size)
-  return love.graphics.newText(assets.fonts[font][font_size])
+function graphics.set_text_tag(tag, actions)
+  graphics.text_tags[tag] = actions
 end
 
 
@@ -335,3 +330,11 @@ function graphics.set_mouse_visible(value)
 end
 
 
+function graphics.stencil(...)
+  love.graphics.stencil(...)
+end
+
+
+function graphics.set_stencil_test(...)
+  love.graphics.setStencilTest(...)
+end

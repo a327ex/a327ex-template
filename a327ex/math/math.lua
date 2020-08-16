@@ -1,3 +1,94 @@
+function math.noisify_line(x1, y1, x2, y2, offset, generations)
+  local lines = {}
+  local generations = generations or 4
+  local offset = offset or 8
+  table.insert(lines, {x1 = x1, y1 = y1, x2 = x2, y2 = y2})
+
+  for i = 1, generations do
+    for i = #lines, 1, -1 do
+      local spx, spy = lines[i].x1, lines[i].y1
+      local epx, epy = lines[i].x2, lines[i].y2
+      table.remove(lines, i)
+
+      local mpx, mpy = (spx + epx)/2, (spy + epy)/2
+      local pnx, pny = Vector(epx - spx, epy - spy):normalize():perpendicular():unpack()
+      mpx = mpx + pnx*random:float(-offset, offset)
+      mpy = mpy + pny*random:float(-offset, offset)
+      table.insert(lines, i, {x1 = spx, y1 = spy, x2 = mpx, y2 = mpy})
+      table.insert(lines, i+1, {x1 = mpx, y1 = mpy, x2 = epx, y2 = epy})
+    end
+    offset = offset/2
+  end
+
+  local vertices = {}
+  for i, line in ipairs(lines) do
+    if i == #lines then
+      table.insert(vertices, line.x1)
+      table.insert(vertices, line.y1)
+      table.insert(vertices, line.x2)
+      table.insert(vertices, line.y2)
+    else
+      table.insert(vertices, line.x1)
+      table.insert(vertices, line.y1)
+    end
+  end
+  return vertices
+end
+
+
+function math.noisify_polygon(vs, offset, generations)
+  local noisified_vertices = {}
+  for i = 1, #vs, 2 do
+    local x1, y1 = vs[i], vs[i+1]
+    local x2, y2 = vs[i+2], vs[i+3]
+    if not x2 and not y2 then x2, y2 = vs[1], vs[2] end
+    local noisified_line = math.noisify_line(x1, y1, x2, y2, offset, generations)
+    table.insert(noisified_vertices, noisified_line)
+  end
+  local flattened = table.flatten(noisified_vertices)
+  local out = {}
+  for i = 1, #flattened, 2 do
+    local x1, y1 = flattened[i], flattened[i+1]
+    local x2, y2 = flattened[i+2], flattened[i+3]
+    if not x2 and not y2 then x2, y2 = flattened[1], flattened[2] end
+    if math.distance(x1, y1, x2, y2) > 0.025 then
+      table.insert(out, x1)
+      table.insert(out, y1)
+    end
+  end
+  return out
+end
+
+
+function math.generate_line_vertices(x, y, w, r, sx, sy)
+  local x1, y1 = math.rotate_scale_point(x - w/2, y, r or 0, sx or 1, sy or sx or 1, x, y)
+  local x2, y2 = math.rotate_scale_point(x + w/2, y, r or 0, sx or 1, sy or sx or 1, x, y)
+  return {x1, y1, x2, y2}
+end
+
+
+function math.generate_emerald_rectangle_vertices(x, y, w, h, rx, ry, r, sx, sy)
+  local x1, y1 = math.rotate_scale_point(x - w/2, y - h/2 + ry, r or 0, sx or 1, sy or sx or 1, x, y)
+  local x2, y2 = math.rotate_scale_point(x - w/2 + rx, y - h/2, r or 0, sx or 1, sy or sx or 1, x, y)
+  local x3, y3 = math.rotate_scale_point(x + w/2 - rx, y - h/2, r or 0, sx or 1, sy or sx or 1, x, y)
+  local x4, y4 = math.rotate_scale_point(x + w/2, y - h/2 + ry, r or 0, sx or 1, sy or sx or 1, x, y)
+  local x5, y5 = math.rotate_scale_point(x + w/2, y + h/2 - ry, r or 0, sx or 1, sy or sx or 1, x, y)
+  local x6, y6 = math.rotate_scale_point(x + w/2 - rx, y + h/2, r or 0, sx or 1, sy or sx or 1, x, y)
+  local x7, y7 = math.rotate_scale_point(x - w/2 + rx, y + h/2, r or 0, sx or 1, sy or sx or 1, x, y)
+  local x8, y8 = math.rotate_scale_point(x - w/2, y + h/2 - ry, r or 0, sx or 1, sy or sx or 1, x, y)
+  return {x1, y1, x2, y2, x3, y3, x4, y4, x5, y5, x6, y6, x7, y7, x8, y8}
+end
+
+
+function math.generate_rectangle_vertices(x, y, w, h, r, sx, sy)
+  local x1, y1 = math.rotate_scale_point(x - w/2, y - h/2, r or 0, sx or 1, sy or sx or 1, x, y)
+  local x2, y2 = math.rotate_scale_point(x + w/2, y - h/2, r or 0, sx or 1, sy or sx or 1, x, y)
+  local x3, y3 = math.rotate_scale_point(x + w/2, y + h/2, r or 0, sx or 1, sy or sx or 1, x, y)
+  local x4, y4 = math.rotate_scale_point(x - w/2, y + h/2, r or 0, sx or 1, sy or sx or 1, x, y)
+  return {x1, y1, x2, y2, x3, y3, x4, y4}
+end
+
+
 function math.get_polygon_center(vs)
   local xs, ys = 0, 0
   for i = 1, #vs, 2 do
@@ -17,6 +108,18 @@ function math.get_polygon_size(vs)
     if vs[i+1] > max_y then max_y = vs[i+1] end
   end
   return math.abs(max_x - min_x), math.abs(max_y - min_y)
+end
+
+
+function math.get_polygon_bounds(vs)
+  local min_x, min_y, max_x, max_y = 100000, 100000, -100000, -100000
+  for i = 1, #vs, 2 do
+    if vs[i] < min_x then min_x = vs[i] end
+    if vs[i] > max_x then max_x = vs[i] end
+    if vs[i+1] < min_y then min_y = vs[i+1] end
+    if vs[i+1] > max_y then max_y = vs[i+1] end
+  end
+  return min_x, min_y, max_x, max_y
 end
 
 

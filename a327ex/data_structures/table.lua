@@ -212,6 +212,13 @@ function table.each(t, f, ...)
 end
 
 
+function table.eachn(t, f, ...)
+  local out = {}
+  for k, v in ipairs(t) do table.insert(out, f(v, k, ...)) end
+  return out
+end
+
+
 function table.reverse_each(t, f, ...)
   for i = #t, 1, -1 do f(t[i], i, ...) end
   return t
@@ -259,20 +266,20 @@ function table.contains(t, v)
 end
 
 
-function table.flatten(t, n)
-  for k = 1, (n or 1) do
-    for i = #t, 1, -1 do
-      local v = t[i]
-      if type(v) == "table" then
-        self:insert(i, v:unpack())
-        table.remove(t, i+#v)
-      elseif type(v) == "table" then
-        self:insert(i, unpack(v))
-        table.remove(t, i+#v)
+function table.flatten(t, shallow)
+  local out = {}
+  local u
+  for k, v in ipairs(t) do
+    if type(v) == "table" then
+      u = shallow and v or table.flatten(v)
+      for _, x in ipairs(u) do
+        table.insert(out, x)
       end
+    else
+      table.insert(out, v)
     end
   end
-  return t
+  return out
 end
 
 

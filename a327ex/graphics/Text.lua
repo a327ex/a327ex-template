@@ -1,9 +1,7 @@
 Text = Object:extend()
 
-
-function Text:new(x, y, tagged_text)
+function Text:new(tagged_text)
   self.timer = Timer()
-  self.x, self.y = x, y
   self.font = font or love.graphics.getFont()
   self.tagged_text = tagged_text
   self.raw_text, self.characters = self:parse(tagged_text)
@@ -39,7 +37,7 @@ function Text:update(dt)
 end
 
 
-function Text:draw()
+function Text:draw(x, y)
   for i, c in ipairs(self.characters) do
     for k, v in pairs(graphics.text_tags) do
       for _, tag in ipairs(c.tags) do
@@ -48,7 +46,7 @@ function Text:draw()
         end
       end
     end
-    graphics.print(c.character, self.x + c.x, self.y + c.y, c.r or 0, c.sx or 1, c.sy or c.sx or 1, c.ox or 0, c.oy or 0)
+    graphics.print(c.character, x + c.x, y + c.y, c.r or 0, c.sx or 1, c.sy or c.sx or 1, c.ox or 0, c.oy or 0)
     graphics.set_color(white)
   end
 end
@@ -166,7 +164,7 @@ function Text:parse(text)
       table.insert(tags, {i = tonumber(i), j = tonumber(j)-1})
     else
       local local_tags = {}
-      for tag in tags_text:gmatch("[%w]+") do table.insert(local_tags, tag) end
+      for tag in tags_text:gmatch("[%w_]+") do table.insert(local_tags, tag) end
       table.insert(tags, {i = tonumber(i), j = tonumber(j)-1, tags = local_tags})
     end
   end

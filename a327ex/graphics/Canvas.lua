@@ -1,9 +1,11 @@
 Canvas = Object:extend()
 
 
-function Canvas:new(w, h)
+function Canvas:new(w, h, opts)
+  local opts = opts or {}
   self.w, self.h = w, h
-  self.canvas = love.graphics.newCanvas(self.w, self.h, {msaa = msaa, mipmaps = "auto"})
+  self.canvas = love.graphics.newCanvas(self.w, self.h, {msaa = opts.msaa, mipmaps = "auto"})
+  self.stencil = opts.stencil
 end
 
 
@@ -16,7 +18,7 @@ end
 
 
 function Canvas:draw_to(action)
-  love.graphics.setCanvas(self.canvas)
+  love.graphics.setCanvas({self.canvas, stencil = self.stencil})
   love.graphics.clear()
   action()
   love.graphics.setCanvas()
