@@ -1,0 +1,14 @@
+Clipper binding that has PolyTrees so we can merge arbitrary polygons that might have multiple leves of holes in them
+https://github.com/lzubiaur/clipper-lua this library would work perfectly but it doesn't have the one feature we want
+Use the same method as https://github.com/a327ex/love-steam for building it as a library
+  Difficulty: this is easy to do and it's just a matter of spending one or two days doing it
+
+Copy of Tiled editor for more integrated use and additional feature development
+Additional features in mind: 
+Streamlined placement of rotated tiles on arbitrary polygons
+Procedural generation algorithms and integrations
+rxi-like autotiling engine
+Features to cut from Tiled:
+Isometric maps
+Maybe the idea of "tiled" maps at all, if the goal is to support arbitrary tiles on polygons then maybe that should be the default behavior and aligned tiles are just a consequence of it
+  Difficulty: hard, it will take months until most things are done, so I feel like this is something that should get done slowly over time through multiple projects

@@ -1,4 +1,4 @@
-require 'a327ex'
+require 'engine'
 
 
 function init()
@@ -17,7 +17,7 @@ end
 
 
 function love.run()
-  local run = a327ex_run({
+  local run = engine_run({
     game_name = 'GAME NAME',
     game_width = 480,
     game_height = 270,
